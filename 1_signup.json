@@ -1,0 +1,181 @@
+{
+	"info": {
+		"_postman_id": "3665e9a6-e78e-4bd8-9321-e3a08324a5b9",
+		"name": "1_signup",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "3227633"
+	},
+	"item": [
+		{
+			"name": "signup - success",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200)",
+							"})",
+							"",
+							"pm.test(\"Check is token exist\", function () {",
+							"    pm.expect(JSON.parse(responseBody).token).to.exist",
+							"})",
+							"",
+							"pm.test(\"Check is FullName true\", function () {",
+							"    pm.expect(pm.environment.get(\"FullName\")).to.eql(JSON.parse(responseBody).user.fullName)",
+							"})",
+							"",
+							"pm.test(\"Check is mail true\", function () {",
+							"    pm.expect(pm.environment.get(\"Mail\")).to.eql(JSON.parse(responseBody).user.mail)",
+							"})",
+							"",
+							"pm.test(\"Check is accessProfile true\", function () {",
+							"    pm.expect(pm.environment.get(\"AccessProfile\")).to.eql(JSON.parse(responseBody).user.accessProfile)",
+							"})",
+							"",
+							"pm.test(\"Check is status true\", function () {",
+							"    pm.expect(true).to.eql(JSON.parse(responseBody).user.status)",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"//console.log(\"Passei aqui antes de realizar a requisição!\")",
+							"",
+							"function firstName() {",
+							"    let firstName = [\"Tony\", \"Bruce\", \"Clint\", \"Natasha\", \"Thor\", \"Steven\"]",
+							"    let randomItem = firstName[Math.floor(Math.random()*firstName.length)]",
+							"",
+							"    return randomItem",
+							"}",
+							"",
+							"function lastName() { ",
+							"    let lastName = [\"Stark\", \"Banner\", \"Barton\", \"Romanoff\", \"Odinson\", \"Rogers\"]",
+							"    let randomItem = lastName[Math.floor(Math.random()*lastName.length)]",
+							"",
+							"    return randomItem",
+							"}",
+							"",
+							"function accessProfile() {",
+							"    let accessProfile = [\"ADMIN\", \"FINANCEIRO\", \"ADMINISTRATIVO\", \"OPERACOES\", \"TI\"]",
+							"    let randomItem = accessProfile[Math.floor(Math.random()* accessProfile.length)]",
+							"",
+							"    return randomItem",
+							"}",
+							"",
+							"function providerMail() {",
+							"    let providerMail = [\"@yahoo.com.br\", \"@gmail.com\", \"@outlook.com\", \"@hotmail.com\", \"@uol.com.br\"]",
+							"    let randomItem = providerMail[Math.floor(Math.random()* providerMail.length)]",
+							"",
+							"    return randomItem",
+							"}",
+							"",
+							"pm.environment.set(\"FirstName\", firstName())",
+							"pm.environment.set(\"LastName\", lastName())",
+							"pm.environment.set(\"FullName\", pm.environment.get(\"FirstName\") + \" \" + pm.environment.get(\"LastName\"))",
+							"pm.environment.set(\"AccessProfile\", accessProfile())",
+							"pm.environment.set(\"ProviderMail\", providerMail())",
+							"pm.environment.set(\"Mail\", pm.environment.get(\"FirstName\") + \"_\" + pm.variables.replaceIn('{{$guid}}') + pm.environment.get(\"ProviderMail\"))",
+							"//pm.environment.set(\"Email\", pm.variables.replaceIn('{{$randomEmail}}'))",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"fullName\": \"{{FullName}}\",\n    \"mail\": \"{{Mail}}\",\n    \"password\": \"{{Password}}\",\n    \"confirmPassword\": \"{{Password}}\",\n    \"accessProfile\": \"{{AccessProfile}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/signup",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"signup"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "signup - fullName is required",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 400\", function () {",
+							"    pm.response.to.have.status(400)",
+							"})",
+							"",
+							"pm.test(\"Check msg: O campo 'fullName' é obrigatório.\", function () {",
+							"    pm.expect(pm.globals.get(\"MsgFullNameRequerid\")).to.eql(JSON.parse(responseBody).errors[0])",
+							"})",
+							"",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"function providerMail() {",
+							"    let providerMail = [\"@yahoo.com.br\", \"@gmail.com\", \"@outlook.com\", \"@hotmail.com\", \"@uol.com.br\"]",
+							"    let randomItem = providerMail[Math.floor(Math.random()* providerMail.length)]",
+							"",
+							"    return randomItem",
+							"}",
+							"",
+							"pm.environment.set(\"ProviderMail\", providerMail())",
+							"pm.environment.set(\"Mail\", pm.environment.get(\"FirstName\") + \"_\" + pm.variables.replaceIn('{{$guid}}') + pm.environment.get(\"ProviderMail\"))"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"fullName\": \"\",\n    \"mail\": \"{{Mail}}\",\n    \"password\": \"{{Password}}\",\n    \"confirmPassword\": \"{{Password}}\",\n    \"accessProfile\": \"{{AccessProfile}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/signup",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"signup"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
